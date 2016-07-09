@@ -1,0 +1,3 @@
+[run]
+source = monster_rx
+omit = monster_rx/test*
