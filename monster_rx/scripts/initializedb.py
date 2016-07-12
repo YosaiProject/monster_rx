@@ -15,7 +15,14 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import MyModel
+
+from ..models import (
+    User,
+    Medicine,
+    PhysicianPatient,
+    Prescription,
+    Status,
+)
 
 
 def usage(argv):
@@ -41,5 +48,50 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        model = MyModel(name='one', value=1)
-        dbsession.add(model)
+        users = [User(username='bubzy', fullname='Bubzy Monster'),
+                 User(username='maxter', fullname='Maxter Monster'),
+                 User(username='bubba', fullname='Dr. Bubba Monster'),
+                 User(username='drmoozy', fullname='Dr. Moozy Monster')]
+
+        meds = [Medicine(title='Cinnamon Jelly Bean'),
+                Medicine(title='Blueberry Jelly Bean'),
+                Medicine(title='Vanilla Jelly Bean'),
+                Medicine(title='Cherry Jelly Bean'),
+                Medicine(title='Strawberry Jelly Bean')]
+
+        rxs = [Prescription(physician=users[2],
+                            patient=users[0],
+                            medicine=meds[0],
+                            title='Cinnamon JB, taken 3 times daily.',
+                            fill_qty=90,
+                            num_fills=5),
+               Prescription(physician=users[2],
+                            patient=users[0],
+                            medicine=meds[1],
+                            title='Blueberry JB, taken 3 times daily.',
+                            fill_qty=90,
+                            num_fills=5),
+               Prescription(physician=users[3],
+                            patient=users[1],
+                            medicine=meds[2],
+                            title='Vanilla JB, taken 2 times daily.',
+                            fill_qty=90,
+                            num_fills=5),
+               Prescription(physician=users[3],
+                            patient=users[1],
+                            medicine=meds[3],
+                            title='Cherry JB, taken once daily.',
+                            fill_qty=90,
+                            num_fills=5),
+               Prescription(physician=users[3],
+                            patient=users[1],
+                            medicine=meds[4],
+                            title='Strawberry JB, taken once daily.',
+                            fill_qty=90,
+                            num_fills=5)]
+
+        status = [Status(name='requested'),
+                  Status(name='approved'),
+                  Status(name='denied')]
+
+        dbsession.add_all(users, meds, rxs, status)
