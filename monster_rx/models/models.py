@@ -12,6 +12,7 @@ from sqlalchemy.orm import (
 )
 
 from .meta import Base
+from sqlalchemy.types import Enum
 
 """
 This data model supports a simplified scenario where no pharmacist intermediary
@@ -55,26 +56,19 @@ class Prescription(Base):
     patient = relationship('User', foreign_keys=[patient_id])
 
 
-# pending, approved, denied
-class Status(Base):
-    __tablename__ = 'status'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(200), nullable=False)
-
-
 class RxRenewalRequest(Base):
     __tablename__ = 'rx_request'
     id = Column(Integer, primary_key=True)
     rx_id = Column(Integer, ForeignKey('prescription.id'))
     requestor_id = Column(Integer, ForeignKey('user.id'))
-    status_id = Column(Integer, ForeignKey('status.id'))
+    status = Column(Enum('requested', 'approved', 'denied'), nullable=False)
     created_dt = Column(DateTime, default=func.now())
 
-    status = relationship('Status')
     rx = relationship('Prescription', backref='renewal_request')
     requestor = relationship('User', backref='renewal_request')
 
 
 def get_pending_renewals(session, physician_username):
     return session.query(RxRenewalRequest).\
-        filter(RxRenewalRequest.requestor.username == physician_username).all()
+        join(RxRenewalRequest.rx, Prescription.physician).\
+        filter(User.username == physician_username).all()

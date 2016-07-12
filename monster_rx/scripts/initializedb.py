@@ -1,11 +1,12 @@
 import os
 import sys
 import transaction
+from datetime import timedelta, datetime
 
 from pyramid.paster import (
     get_appsettings,
     setup_logging,
-    )
+)
 
 from pyramid.scripts.common import parse_vars
 
@@ -14,12 +15,12 @@ from ..models import (
     get_engine,
     get_session_factory,
     get_tm_session,
-    )
+)
 
 from ..models import (
+    RxRenewalRequest,
     User,
     Medicine,
-    PhysicianPatient,
     Prescription,
     Status,
 )
@@ -87,11 +88,10 @@ def main(argv=sys.argv):
                             patient=users[1],
                             medicine=meds[4],
                             title='Strawberry JB, taken once daily.',
-                            fill_qty=90,
-                            num_fills=5)]
+                            fill_qty=30,
+                            num_fills=0,
+                            created_dt=(datetime.now() - timedelta(days=30)))]
 
-        status = [Status(name='requested'),
-                  Status(name='approved'),
-                  Status(name='denied')]
+        rx_req = [RxRenewalRequest(status='requested', rx=rxs[4], requestor=users[0])]
 
-        dbsession.add_all(users, meds, rxs, status)
+        dbsession.add_all(users + meds + rxs + rx_req)
