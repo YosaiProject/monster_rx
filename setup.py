@@ -17,6 +17,7 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
+    'yosai_alchemystore'
     ]
 
 tests_require = [
@@ -51,5 +52,6 @@ setup(name='monster_rx',
       main = monster_rx:main
       [console_scripts]
       initialize_monster_rx_db = monster_rx.scripts.initializedb:main
+      initialize_monster_rx_yosai_db = monster_rx.scripts.init_yosai_db:main
       """,
       )

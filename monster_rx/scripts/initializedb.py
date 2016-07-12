@@ -22,7 +22,6 @@ from ..models import (
     User,
     Medicine,
     Prescription,
-    Status,
 )
 
 
