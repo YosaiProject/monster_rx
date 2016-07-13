@@ -1,12 +1,24 @@
 import os
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
+
+
+class CleanCommand(Command):
+    """Custom clean command to tidy up the project root."""
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.txt')) as f:
     README = f.read()
-with open(os.path.join(here, 'CHANGES.txt')) as f:
-    CHANGES = f.read()
 
 requires = [
     'pyramid',
@@ -17,13 +29,14 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'yosai_alchemystore'
+    'yosai_alchemystore',
+    # 'pyramid_yosai',
     ]
 
 setup(name='monster_rx',
       version='0.0',
       description='monster_rx',
-      long_description=README + '\n\n' + CHANGES,
+      long_description=README,
       classifiers=[
           "Programming Language :: Python",
           "Topic :: Internet :: WWW/HTTP",
@@ -44,4 +57,5 @@ setup(name='monster_rx',
       initialize_monster_rx_db = monster_rx.scripts.initializedb:main
       initialize_monster_rx_yosai_db = monster_rx.scripts.init_yosai_db:main
       """,
+      cmdclass={'clean': CleanCommand},
       )

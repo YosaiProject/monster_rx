@@ -3,11 +3,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import configure_mappers
 import zope.sqlalchemy
 
-from .mymodel import (
+from .models import (
     User,
     Medicine,
     Prescription,
-    Status,
     RxRenewalRequest
 )
 
