@@ -45,6 +45,23 @@ from ..models import (
     Prescription,
 )
 
+"""
+Don't waste your time questioning the real-world validity of this data model.
+This data model supports a simplified scenario where no pharmacist intermediary
+is considered, nor the use of (re)fills.  Further, a hypothetical constraint
+is introduced so as to illustrate resource-level permissions (writing rx's, see below).
+
+The workflow / authorization policy is as follows:
+
+    Domain-Level Authorization:
+    - A [patient] can [request] a [prescription renewal].
+
+    - A [physician] can [view] [pending prescription renewal requests]
+    - A [physician] can [approve] or [deny] [prescription renewal requests]
+
+    Resource-Level Authorization:
+    - A [physician] can [write] a new [prescription] for a [particular medicine] (let's imagine that it's a regulation, for this example)
+"""
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -71,98 +88,69 @@ def main(argv=sys.argv):
 
         # yes, the user model is redundant but I ran out of time making this
         users = [UserModel(first_name='Bubzy', last_name='Monster', identifier='bubzy'),
-                 UserModel(first_name='Maxter', last_name='Monster', identifier='maxter'),
-                 UserModel(first_name='Bubba', last_name='Monster', identifier='bubba'),
                  UserModel(first_name='Moozy', last_name='Monster', identifier='drmoozy')]
 
-        domains = [DomainModel(name='prescription')]
+        domains = [DomainModel(name='prescription'),
+                   DomainModel(name='rx_request')]
 
-        actions = [ActionModel(name='write'),
-                   ActionModel(name='request'),
+        actions = [ActionModel(name='create'),
                    ActionModel(name='approve'),
-                   ActionModel(name='deny')]
+                   ActionModel(name='deny'),
+                   ActionModel(name='view')]
+
+        resources = [ResourceModel(name='1')]  # the first prescription pk_id
 
         roles = [RoleModel(title='patient'), 
                  RoleModel(title='physician')]
 
         dbsession.add_all(users + roles + domains + actions)
 
+        users = dict((user.identifier, user) for user in dbsession.query(UserModel).all())
+        domains = dict((domain.name, domain) for domain in dbsession.query(DomainModel).all())
+        actions = dict((action.name, action) for action in dbsession.query(ActionModel).all())
+        roles = dict((role.title, role) for role in dbsession.query(RoleModel).all())
 
-users = dict((user.first_name+'_'+user.last_name, user) for user in session.query(UserModel).all())
-domains = dict((domain.name, domain) for domain in session.query(DomainModel).all())
-actions = dict((action.name, action) for action in session.query(ActionModel).all())
-resources = dict((resource.name, resource) for resource in session.query(ResourceModel).all())
-roles = dict((role.title, role) for role in session.query(RoleModel).all())
+        thirty_from_now = datetime.datetime.now() + datetime.timedelta(days=30)
 
-thirty_from_now = datetime.datetime.now() + datetime.timedelta(days=30)
+        cc = CryptContext(schemes=['bcrypt_sha256'])
+        password = cc.encrypt('M0nsterRX')
 
-cc = CryptContext(schemes=['bcrypt_sha256'])
-password = cc.encrypt('letsgobowling')
+        credentials = [CredentialModel(user_id=user.pk_id, 
+                                       credential=password,
+                                       expiration_dt=thirty_from_now) for user in users.values()]
+        dbsession.add_all(credentials)
 
-credentials = [CredentialModel(user_id=user.pk_id, 
-                          credential=password,
-                          expiration_dt=thirty_from_now) for user in users.values()]
-dbsession.add_all(credentials)
+        perm1 = PermissionModel(domain=domains['prescription'],
+                                action=actions['write'])
+        
+        perm2 = PermissionModel(domain=domains['rx_request'],
+                                action=actions['create'])
 
+        perm3 = PermissionModel(domain=domains['rx_request'],
+                                action=actions['approve'])
+        
+        perm4 = PermissionModel(domain=domains['rx_request'],
+                                action=actions['deny'])
+        
+        perm5 = PermissionModel(domain=domains['rx_request'],
+                                action=actions['view'])
+        
+        perm6 = PermissionModel(domain=domains['prescription'],
+                                action=actions['create'],
+                                resource=resources['1'])  # resource-level perm for first rx
 
-perm1 = PermissionModel(domain=domains['money'],
-                   action=actions['write'],
-                   resource=resources['bankcheck_19911109069'])
+        dbsession.add_all([perm1, perm2, perm3, perm4, perm5, perm6])
 
-perm2 = PermissionModel(domain=domains['money'],
-                   action=actions['deposit'])
+        patient = roles['patient']
+        physician = roles['physician']
 
-perm3 = PermissionModel(domain=domains['money'],
-                   action=actions['access'],
-                   resource=resources['ransom'])
+        # associate permissions with roles
+        patient.permissions.append([perm2])  # a patient can create an rx_request
+        physician.permissions.extend([perm1, perm3, perm4, perm6])
 
-perm4 = PermissionModel(domain=domains['leatherduffelbag'],
-                   action=actions['transport'],
-                   resource=resources['theringer'])
+        # assign the users to roles
+        drmoozy = users['drmoozy']
+        drmoozy.roles.extend([physician, patient])
 
-perm5 = PermissionModel(domain=domains['leatherduffelbag'],
-                   action=actions['access'],
-                   resource=resources['theringer'])
-
-perm6 = PermissionModel(domain=domains['money'],
-                   action=actions['withdrawal'])
-
-perm7 = PermissionModel(action=actions['bowl'])
-
-perm8 = PermissionModel(action=actions['run'])  # I dont know!?
-
-dbsession.add_all([perm1, perm2, perm3, perm4, perm5, perm6, perm7, perm8])
-
-bankcustomer = roles['bankcustomer']
-courier = roles['courier']
-tenant = roles['tenant']
-landlord = roles['landlord']
-thief = roles['thief']
-
-bankcustomer.permissions.extend([perm2, perm7, perm8])
-courier.permissions.extend([perm4, perm7, perm8])
-tenant.permissions.extend([perm1, perm7, perm8])
-thief.permissions.extend([perm3, perm4, perm5, perm7, perm8])
-landlord.permissions.extend([perm6, perm7, perm8])
-
-thedude = users['Jeffrey_Lebowski']
-thedude.roles.extend([bankcustomer, courier, tenant])
-
-walter = users['Walter_Sobchak']
-walter.roles.extend([bankcustomer, courier])
-
-marty = users['Marty_Houston']
-marty.roles.extend([bankcustomer, landlord])
-
-larry = users['Larry_Sellers']
-larry.roles.extend([bankcustomer, thief])  # yes, I know, it's not confirmed
-
-jackie = users['Jackie_Treehorn']
-jackie.roles.extend([bankcustomer, thief])  # karl may be working for him-- close enough
-
-karl = users['Karl_Hungus']
-karl.roles.extend([bankcustomer, thief])
-
-dbsession.commit()
-
-dbsession.close()
+        bubzy = users['bubzy']
+        bubzy.roles.append([patient])

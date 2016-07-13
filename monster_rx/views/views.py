@@ -9,6 +9,14 @@ from yosai.core import (
     Yosai,
 )
 
+from yosai_alchemystore.models.models import (
+    ResourceModel,
+)
+
+from ..models import (
+    Prescription,
+)
+
 
 @view_config(route_name='login', renderer='../templates/login.jinja2')
 def login(request):
@@ -53,14 +61,31 @@ def launchpad(request):
 #    pass
 
 
-#@view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
-#def create_rx(request):
-    # when a prescription gets created, a new resource-level permission gets
-    # created
+@view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
+def create_rx(request):
+
+    create_rx_form = CreateRXForm(request.POST, context={'request': request})
+
+    if request.method == "POST" and login_form.validate():
+
+        create_rx_form.field.data
+
+        prescription = Prescription(...)
+
+        request.dbsession.add(prescription)
+
+        # When a prescription gets created, a new resource-level permission could be
+        # created in the yosai database, allowing resource-level authorization
+        # for that new rx. However, time has not yet allowed support for adding new
+        # resource to the yosai db.  Adding this to TO-DO.
+        #resource = ResourceModel(name=prescription.id)
+        # yosai_session
 
 
 #@view_config(route_name='request_rx_renewal', renderer='../templates/request_rx_renewal.jinja2')
 #def request_rx_renewal(request):
+
+
 
 #    rx_refill_form = RxRefillForm(request.POST, context={'request': request})
     # requires an rx_id to refill

@@ -15,16 +15,21 @@ from .meta import Base
 from sqlalchemy.types import Enum
 
 """
+Don't waste your time questioning the real-world validity of this data model.
 This data model supports a simplified scenario where no pharmacist intermediary
-is considered, nor the use of (re)fills.  The workflow / authorization policy
-is as follows:
+is considered, nor the use of (re)fills.  Further, a hypothetical constraint
+is introduced so as to illustrate resource-level permissions (writing rx's, see below).
 
-    - A physician can write a new prescription for a patient.
+The workflow / authorization policy is as follows:
 
-    - A patient can request a prescription renewal.
+    Domain-Level Authorization:
+    - A [patient] can [request] a [prescription renewal].
 
-    - A physician can list pending prescription renewal requests
-    - A physician can approve or deny prescription renewal requests
+    - A [physician] can [view] [pending prescription renewal requests]
+    - A [physician] can [approve] or [deny] [prescription renewal requests]
+
+    Resource-Level Authorization:
+    - A [physician] can [write] a new [prescription] for a [particular medicine] (let's imagine that it's a regulation, for this example)
 """
 
 class User(Base):
