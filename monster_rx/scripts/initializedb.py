@@ -48,8 +48,10 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
+        # yes, the user model is redundant but I ran out of time making this
         users = [User(username='bubzy', fullname='Bubzy Monster'),
-                 User(username='drmoozy', fullname='Dr. Moozy Monster')]
+                 User(username='drmoozy', fullname='Dr. Moozy Monster'),
+                 User(username='nursemax', fullname='Maxter Monster')]
 
         meds = [Medicine(title='Cinnamon Jelly Bean'),
                 Medicine(title='Blueberry Jelly Bean'),
@@ -57,32 +59,32 @@ def main(argv=sys.argv):
                 Medicine(title='Cherry Jelly Bean'),
                 Medicine(title='Strawberry Jelly Bean')]
 
-        rxs = [Prescription(physician=users[2],
+        rxs = [Prescription(physician=users[1],
                             patient=users[0],
                             medicine=meds[0],
                             title='Cinnamon JB, taken 3 times daily.',
                             fill_qty=90,
                             num_fills=5),
-               Prescription(physician=users[2],
+               Prescription(physician=users[1],
                             patient=users[0],
                             medicine=meds[1],
                             title='Blueberry JB, taken 3 times daily.',
                             fill_qty=90,
                             num_fills=5),
-               Prescription(physician=users[3],
-                            patient=users[1],
+               Prescription(physician=users[1],
+                            patient=users[0],
                             medicine=meds[2],
                             title='Vanilla JB, taken 2 times daily.',
                             fill_qty=90,
                             num_fills=5),
-               Prescription(physician=users[3],
-                            patient=users[1],
+               Prescription(physician=users[1],
+                            patient=users[0],
                             medicine=meds[3],
                             title='Cherry JB, taken once daily.',
                             fill_qty=90,
                             num_fills=5),
-               Prescription(physician=users[3],
-                            patient=users[1],
+               Prescription(physician=users[1],
+                            patient=users[0],
                             medicine=meds[4],
                             title='Strawberry JB, taken once daily.',
                             fill_qty=30,

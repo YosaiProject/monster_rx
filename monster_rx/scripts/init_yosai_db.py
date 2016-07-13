@@ -41,13 +41,15 @@ The workflow / authorization policy is as follows:
     Domain-Level Authorization:
     - A [patient] can [request] a [prescription renewal].
 
+    - A [physician] can [prescribe] any [medicine]
+    - A [physician] can [view] [prescriptions]
     - A [physician] can [view] [pending prescription renewal requests]
     - A [physician] can [approve] or [deny] [prescription renewal requests]
 
     Resource-Level Authorization:
-    - A [physician] can [write] a new [prescription] for a [particular medicine] (let's imagine that it's a regulation, for this example)
+    - A [nurse_practitioner] can [prescribe] a [particular_medicine]
+        (for instance, the Sudafed equivalent for monsters?)
 """
-
 
 def main():
 
@@ -61,21 +63,24 @@ def main():
 
         # yes, the user model is redundant but I ran out of time making this
         users = [UserModel(first_name='Bubzy', last_name='Monster', identifier='bubzy'),
-                 UserModel(first_name='Moozy', last_name='Monster', identifier='drmoozy')]
+                 UserModel(first_name='Moozy', last_name='Monster', identifier='drmoozy'),
+                 UserModel(first_name='Maxter', last_name='Monster', identifier='drmax')]
 
         domains = [DomainModel(name='prescription'),
+                   DomainModel(name='medicine'),
                    DomainModel(name='rx_request')]
 
         actions = [ActionModel(name='create'),
-                   ActionModel(name='write'),
+                   ActionModel(name='prescribe'),
                    ActionModel(name='approve'),
                    ActionModel(name='deny'),
                    ActionModel(name='view')]
 
-        resources = [ResourceModel(name='1')]  # the first prescription pk_id
+        resources = [ResourceModel(name='1')]  # the first medicine pk_id (cinammon jb) -- this is a hack
 
         roles = [RoleModel(title='patient'),
-                 RoleModel(title='physician')]
+                 RoleModel(title='physician'),
+                 RoleModel(title='nurse_practitioner')]
 
         dbsession.add_all(users + roles + domains + actions + resources)
 
@@ -96,7 +101,7 @@ def main():
         dbsession.add_all(credentials)
 
         perm1 = PermissionModel(domain=domains['prescription'],
-                                action=actions['write'])
+                                action=actions['view'])
 
         perm2 = PermissionModel(domain=domains['rx_request'],
                                 action=actions['create'])
@@ -110,18 +115,23 @@ def main():
         perm5 = PermissionModel(domain=domains['rx_request'],
                                 action=actions['view'])
 
-        perm6 = PermissionModel(domain=domains['prescription'],
-                                action=actions['create'],
+        perm6 = PermissionModel(domain=domains['medicine'],
+                                action=actions['prescribe'],
                                 resource=resources['1'])  # resource-level perm for first rx
 
-        dbsession.add_all([perm1, perm2, perm3, perm4, perm5, perm6])
+        perm7 = PermissionModel(domain=domains['medicine'],
+                                action=actions['prescribe'])
+
+        dbsession.add_all([perm1, perm2, perm3, perm4, perm5, perm6, perm7])
 
         patient = roles['patient']
         physician = roles['physician']
+        nurse_practitioner = roles['nurse_practitioner']
 
         # associate permissions with roles
         patient.permissions.append(perm2)  # a patient can create an rx_request
-        physician.permissions.extend([perm1, perm3, perm4, perm6])
+        physician.permissions.extend([perm1, perm3, perm4, perm5, perm7])
+        nurse_practitioner.permissions.append(perm6)
 
         # assign the users to roles
         drmoozy = users['drmoozy']
@@ -129,3 +139,6 @@ def main():
 
         bubzy = users['bubzy']
         bubzy.roles.append(patient)
+
+        drmax = users['drmax']
+        drmax.roles.append(nurse_practitioner)

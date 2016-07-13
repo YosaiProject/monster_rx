@@ -51,12 +51,12 @@ class Prescription(Base):
     physician_id = Column(Integer, ForeignKey('user.id'))
     patient_id = Column(Integer, ForeignKey('user.id'))
     medicine_id = Column(Integer, ForeignKey('medicine.id'))
-    title = Column(String(100), nullable=False)
+    title = Column(String(100))
     fill_qty = Column(Integer)
     num_fills = Column(Integer)
     created_dt = Column(DateTime, default=func.now())
 
-    medicine = relationship('Medicine')
+    medicine = relationship('Medicine', foreign_keys=[medicine_id])
     physician = relationship('User', foreign_keys=[physician_id])
     patient = relationship('User', foreign_keys=[patient_id])
 
@@ -66,11 +66,11 @@ class RxRenewalRequest(Base):
     id = Column(Integer, primary_key=True)
     rx_id = Column(Integer, ForeignKey('prescription.id'))
     requestor_id = Column(Integer, ForeignKey('user.id'))
-    status = Column(Enum('requested', 'approved', 'denied'), nullable=False)
+    status = Column(Enum('requested', 'approved', 'denied', name='request_status'), default='requested')
     created_dt = Column(DateTime, default=func.now())
 
-    rx = relationship('Prescription', backref='renewal_request')
-    requestor = relationship('User', backref='renewal_request')
+    rx = relationship('Prescription', backref='renewal_request', foreign_keys=[rx_id])
+    requestor = relationship('User', backref='renewal_request', foreign_keys=[requestor_id])
 
 
 def get_pending_renewals(session, physician_username):
