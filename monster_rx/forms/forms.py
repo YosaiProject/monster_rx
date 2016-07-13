@@ -2,9 +2,10 @@ import wtforms
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from pyramid.threadlocal import get_current_request
-from pyramid_yosai import YosaiForm
 
-from .models import get_prescriptions
+#from pyramid_yosai import YosaiForm
+
+from ..models import get_prescriptions
 
 
 def strip_filter(value):

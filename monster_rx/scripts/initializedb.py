@@ -91,6 +91,4 @@ def main(argv=sys.argv):
                             num_fills=0,
                             created_dt=(datetime.now() - timedelta(days=30)))]
 
-        rx_req = [RxRenewalRequest(status='requested', rx=rxs[4], requestor=users[0])]
-
-        dbsession.add_all(users + meds + rxs + rx_req)
+        dbsession.add_all(users + meds + rxs)

@@ -5,17 +5,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animals</title>
+    <title>MonsterRx</title>
 
-    <link href="{{request.static_url('dynamic_form_example:static/bower_components/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{request.static_url('dynamic_form_example:static/bower_components/bootstrap-table/dist/bootstrap-table.min.css')}}" rel="stylesheet">
+    <link href="{{request.static_url('monster_rx:static/main.css')}}" rel="stylesheet">
+    <link href="{{request.static_url('monster_rx:static/bower_components/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{request.static_url('monster_rx:static/bower_components/bootstrap-table/dist/bootstrap-table.min.css')}}" rel="stylesheet">
 </head>
 
 <body>
     <main role="main">
         <div class="container">
 
-            <div class="row">
+            <div class="row margin_top">
                 {% block content %}
                 <p>No content</p>
                 {% endblock content %}
@@ -24,9 +25,9 @@
         </div>
     </main>
 
-    <script type="text/javascript" src="{{request.static_url('dynamic_form_example:static/bower_components/jquery/dist/jquery.min.js')}}"></script>
-    <script type="text/javascript" src="{{request.static_url('dynamic_form_example:static/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
-    <script type="text/javascript" src="{{request.static_url('dynamic_form_example:static/bower_components/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
+    <script type="text/javascript" src="{{request.static_url('monster_rx:static/bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{request.static_url('monster_rx:static/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{request.static_url('monster_rx:static/bower_components/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
 
     {% block footer_script %}
     {% endblock footer_script %}

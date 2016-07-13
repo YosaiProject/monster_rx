@@ -29,6 +29,7 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
+    'wtforms',
     'yosai_alchemystore',
     # 'pyramid_yosai',
     ]

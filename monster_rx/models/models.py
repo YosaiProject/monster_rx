@@ -58,24 +58,26 @@ class Prescription(Base):
 
     medicine = relationship('Medicine', foreign_keys=[medicine_id])
     physician = relationship('User', foreign_keys=[physician_id])
-    patient = relationship('User', foreign_keys=[patient_id])
+    patient = relationship('User', backref='prescriptions', foreign_keys=[patient_id])
 
 
 class RxRenewalRequest(Base):
     __tablename__ = 'rx_request'
     id = Column(Integer, primary_key=True)
     rx_id = Column(Integer, ForeignKey('prescription.id'))
-    requestor_id = Column(Integer, ForeignKey('user.id'))
     status = Column(Enum('requested', 'approved', 'denied', name='request_status'), default='requested')
     created_dt = Column(DateTime, default=func.now())
 
-    rx = relationship('Prescription', backref='renewal_request', foreign_keys=[rx_id])
-    requestor = relationship('User', backref='renewal_request', foreign_keys=[requestor_id])
+    rx = relationship('Prescription',
+                      backref='renewal_requests',
+                      foreign_keys=[rx_id])
 
+def add_rx_request(session, prescription):
+    return session.add(RxRenewalRequest(rx=prescription))
 
 def get_prescriptions(session, username):
-    return session.query(Prescription).filter(Prescription.patient.username == username)
-
+    return session.query(Prescription).join(Prescription.patient).\
+        filter(User.username == username)
 
 def get_pending_requests(session, physician_username):
     return session.query(RxRenewalRequest).\

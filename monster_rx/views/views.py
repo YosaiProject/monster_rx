@@ -1,4 +1,5 @@
-from forms import LoginForm, RxRequestForm
+from ..forms import RxRequestForm
+from pyramid_yosai import LoginForm
 from pyramid.view import view_config
 
 from pyramid.httpexceptions import HTTPFound
@@ -10,10 +11,17 @@ from yosai.core import (
 )
 
 from ..models import (
-    Prescription,
+    add_rx_request,
 )
 
+import pdb
 from pyramid.response import Response
+
+
+@view_config(route_name='home')
+def home(request):
+    next_url = request.route_url('launchpad')
+    return HTTPFound(location=next_url)
 
 
 @view_config(route_name='login', renderer='../templates/login.jinja2')
@@ -60,28 +68,32 @@ def request_rx(request):
 
     rx_request_form = RxRequestForm(request.POST)
 
-    if request.method == "POST" and animal_form.validate():
-        request.dbsession.add(Animal(name=animal_form.animal_name.data,
-                                     animal_type=animal_form.animal_type.data))
+    if request.method == "POST" and rx_request_form.validate():
+        add_rx_request(request.dbsession, rx_request_form.data['prescription'])
 
-        next_url = request.route_url('add_animal')
+        # request.session.flash('RX Request Submitted.')
+        next_url = request.route_url('request_rx')
         return HTTPFound(next_url)
     else:
         return {'rx_request_form': rx_request_form}
 
 
-@view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
-def create_rx(request):
+@view_config(route_name='rx_portal') # , renderer='../templates/rx_portal.jinja2')
+def rx_portal(request):
+    return Response()
 
-    create_rx_form = CreateRXForm(request.POST, context={'request': request})
+# @view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
+# def create_rx(request):
 
-    if request.method == "POST" and login_form.validate():
+#    create_rx_form = CreateRXForm(request.POST, context={'request': request})
 
-        create_rx_form.field.data
+#    if request.method == "POST" and login_form.validate():
 
-        prescription = Prescription(...)
+#        create_rx_form.field.data
 
-        request.dbsession.add(prescription)
+#        prescription = Prescription(...)
+
+#        request.dbsession.add(prescription)
 
         # When a prescription gets created, a new resource-level permission could be
         # created in the yosai database, allowing resource-level authorization
