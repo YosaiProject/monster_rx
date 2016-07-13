@@ -1,0 +1,19 @@
+{% extends "monster_rx:templates/layout.jinja2" %}
+
+{% block content %}
+<div class="col-xs-8 col-lg-offset-2">
+
+{% if 'patient' in roles %}
+<a href="{{ 'request_rx'|route_url }}">
+<img src="monster_rx_medicine.png" class="launchpad_img">
+</a>
+{% endif %}
+
+{% any([x in ['physician', 'nurse_practitioner'] for x in roles]) %}
+<a href="{{ 'rx_portal'|route_url }}">
+<img src="monster_rx_medicine.png" class="launchpad_img">
+</a>
+{% endif %}
+
+</div>
+{% endblock content %}

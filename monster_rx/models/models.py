@@ -73,7 +73,11 @@ class RxRenewalRequest(Base):
     requestor = relationship('User', backref='renewal_request', foreign_keys=[requestor_id])
 
 
-def get_pending_renewals(session, physician_username):
+def get_prescriptions(session, username):
+    return session.query(Prescription).filter(Prescription.patient.username == username)
+
+
+def get_pending_requests(session, physician_username):
     return session.query(RxRenewalRequest).\
         join(RxRenewalRequest.rx, Prescription.physician).\
-        filter(User.username == physician_username).all()
+        filter(User.username == physician_username)

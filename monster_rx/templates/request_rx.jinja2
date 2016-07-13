@@ -1,0 +1,26 @@
+{% extends "monster_rx:templates/layout.jinja2" %}
+{% import 'monster_rx:templates/forms.jinja2' as form %}
+
+{% block content %}
+<div class="col-md-5">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Create A Prescription Renewal Request
+            </h3>
+        </div>
+        <div class="panel-body">
+
+            <form action="{{request.route_url('request_rx')}}"
+                  method="POST" role="form" class="form-horizontal">
+                {{form.render_form(rx_request_form)}}
+            <button type="submit" class="btn btn-default col-sm-offset-3 btn-primary">
+                Submit Request
+            </button>
+        </form>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

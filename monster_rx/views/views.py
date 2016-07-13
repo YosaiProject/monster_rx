@@ -1,4 +1,4 @@
-from forms import LoginForm
+from forms import LoginForm, RxRequestForm
 from pyramid.view import view_config
 
 from pyramid.httpexceptions import HTTPFound
@@ -9,13 +9,11 @@ from yosai.core import (
     Yosai,
 )
 
-from yosai_alchemystore.models.models import (
-    ResourceModel,
-)
-
 from ..models import (
     Prescription,
 )
+
+from pyramid.response import Response
 
 
 @view_config(route_name='login', renderer='../templates/login.jinja2')
@@ -46,19 +44,30 @@ def login(request):
 # requires_user
 @view_config(route_name='launchpad', renderer='../templates/launchpad.jinja2')
 def launchpad(request):
-    subject = Yosai.get_current_subject()
-    check_roles = subject.has_roles(['doctor', 'patient'])
+    # subject = Yosai.get_current_subject()
+    # check_roles = subject.has_roles(['doctor', 'patient'])
 
     # check_roles looks like:  [('role_name', Boolean), ...]
-    roles = [role for role, check in filter(lambda x: x[1], check_roles)]
+    # roles = [role for role, check in filter(lambda x: x[1], check_roles)]
+
+    roles = ['physician', 'patient']
 
     return {'roles': roles}
 
 
-# @view_config(route_name='process_rx_reqs', renderer='../templates/process_rx_reqs.jinja2')
-#def process_rx_reqs(request):
-    # view or approve/deny
-#    pass
+@view_config(route_name='request_rx', renderer='../templates/request_rx.jinja2')
+def request_rx(request):
+
+    rx_request_form = RxRequestForm(request.POST)
+
+    if request.method == "POST" and animal_form.validate():
+        request.dbsession.add(Animal(name=animal_form.animal_name.data,
+                                     animal_type=animal_form.animal_type.data))
+
+        next_url = request.route_url('add_animal')
+        return HTTPFound(next_url)
+    else:
+        return {'rx_request_form': rx_request_form}
 
 
 @view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
@@ -80,10 +89,6 @@ def create_rx(request):
         # resource to the yosai db.  Adding this to TO-DO.
         #resource = ResourceModel(name=prescription.id)
         # yosai_session
-
-
-#@view_config(route_name='request_rx_renewal', renderer='../templates/request_rx_renewal.jinja2')
-#def request_rx_renewal(request):
 
 
 

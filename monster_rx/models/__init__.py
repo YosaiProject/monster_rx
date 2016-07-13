@@ -7,7 +7,9 @@ from .models import (
     User,
     Medicine,
     Prescription,
-    RxRenewalRequest
+    RxRenewalRequest,
+    get_pending_requests,
+    get_prescriptions,
 )
 
 configure_mappers()
