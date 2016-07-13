@@ -49,8 +49,6 @@ def main(argv=sys.argv):
         dbsession = get_tm_session(session_factory, transaction.manager)
 
         users = [User(username='bubzy', fullname='Bubzy Monster'),
-                 User(username='maxter', fullname='Maxter Monster'),
-                 User(username='bubba', fullname='Dr. Bubba Monster'),
                  User(username='drmoozy', fullname='Dr. Moozy Monster')]
 
         meds = [Medicine(title='Cinnamon Jelly Bean'),
