@@ -1,0 +1,15 @@
+{% extends "monster_rx:templates/layout.jinja2" %}
+{% import 'monster_rx:templates/forms.jinja2' as form %}
+
+{% block content %}
+<div class="panel-body">
+
+        <form action="{{ 'login'|route_url }}"
+              method="POST" role="form" class="form-horizontal">
+            {{form.render_form(login_form)}}
+        <button type="submit" class="btn btn-default col-sm-offset-1 btn-primary">
+            Login
+        </button>
+    </form>
+</div>
+{% endblock content %}

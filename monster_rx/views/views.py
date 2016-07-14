@@ -21,7 +21,12 @@ from ..models import (
 
 @view_config(route_name='home')
 def home(request):
-    next_url = request.route_url('launchpad')
+    subject = Yosai.get_current_subject()
+    if subject.authenticated:
+        next_url = request.route_url('launchpad')
+    else:
+        next_url = request.route_url('login')
+
     return HTTPFound(location=next_url)
 
 
@@ -43,7 +48,7 @@ def login(request):
             return HTTPFound(location=next_url)
 
         except AuthenticationException:
-            request.session.flash('Invalid Login Credentials.')
+            # request.session.flash('Invalid Login Credentials.')
             return {'form': login_form}
 
     else:
