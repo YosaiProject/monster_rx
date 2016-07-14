@@ -8,7 +8,8 @@ from .models import (
     Medicine,
     Prescription,
     RxRenewalRequest,
-    get_pending_requests,
+    get_pending_patient_requests,
+    get_pending_physician_requests,
     get_prescriptions,
     add_rx_request,
 )

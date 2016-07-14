@@ -12,9 +12,10 @@ from yosai.core import (
 
 from ..models import (
     add_rx_request,
+    get_pending_patient_requests,
+    get_pending_physician_requests,
 )
 
-import pdb
 from pyramid.response import Response
 
 
@@ -75,12 +76,26 @@ def request_rx(request):
         next_url = request.route_url('request_rx')
         return HTTPFound(next_url)
     else:
-        return {'rx_request_form': rx_request_form}
+        # current_username = Yosai.get_current_subject().primary_identifier
+        current_username = 'bubzy' # temporary
+        results = get_pending_patient_requests(request.dbsession, current_username).all()
+
+        return {'rx_request_form': rx_request_form,
+                'results': results,
+                'user': current_username}
 
 
-@view_config(route_name='rx_portal') # , renderer='../templates/rx_portal.jinja2')
+@view_config(route_name='rx_portal', renderer='../templates/pending_rx.jinja2')
 def rx_portal(request):
-    return Response()
+    if request.method == "POST":
+        print(request.POST)
+
+    else:
+        # current_username = Yosai.get_current_subject().primary_identifier
+        current_username = 'drmoozy' # temporary
+        results = get_pending_physician_requests(request.dbsession, current_username).all()
+
+        return {'results': results}
 
 # @view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
 # def create_rx(request):

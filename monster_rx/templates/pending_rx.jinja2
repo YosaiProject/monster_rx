@@ -1,0 +1,36 @@
+{% extends "monster_rx:templates/layout.jinja2" %}
+
+{% block content %}
+<div class="col-xs-8 col-lg-offset-2">
+
+  <form method="post" action="{{ 'rx_portal'|route_url }}">
+    <table id="pending_rx_table"
+           data-toggle="table"
+           class="table-striped table-bordered"
+           data-toolbar="#toolbar"
+           data-click-to-select="true">
+        <thead>
+          <tr>
+            <th data-field="approve" class="text-center">Approve</th>
+            <th data-field="patient" class="col-lg-6" data-sortable="true">Patient</th>
+            <th data-field="prescription" class="col-lg-6" data-sortable="true">Prescription</th>
+            <th data-field="created" class="col-lg-2">Time Requested</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td><input type="checkbox" class="form" name="{{result.id}}"></input></td>
+                <td>{{result.patient}}</td>
+                <td>{{result.prescription}}</td>
+                <td>{{result.created_dt}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="margin-top: 10px;" class="col-sm-offset-1">
+        <button id="button" type="submit" class="btn btn-primary">Process Requests</button>
+    </div>
+  </form>
+</div>
+{% endblock content %}

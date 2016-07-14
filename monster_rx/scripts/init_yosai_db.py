@@ -73,7 +73,6 @@ def main():
         actions = [ActionModel(name='create'),
                    ActionModel(name='prescribe'),
                    ActionModel(name='approve'),
-                   ActionModel(name='deny'),
                    ActionModel(name='view')]
 
         resources = [ResourceModel(name='1')]  # the first medicine pk_id (cinammon jb) -- this is a hack
@@ -109,9 +108,6 @@ def main():
         perm3 = PermissionModel(domain=domains['rx_request'],
                                 action=actions['approve'])
 
-        perm4 = PermissionModel(domain=domains['rx_request'],
-                                action=actions['deny'])
-
         perm5 = PermissionModel(domain=domains['rx_request'],
                                 action=actions['view'])
 
@@ -122,7 +118,7 @@ def main():
         perm7 = PermissionModel(domain=domains['medicine'],
                                 action=actions['prescribe'])
 
-        dbsession.add_all([perm1, perm2, perm3, perm4, perm5, perm6, perm7])
+        dbsession.add_all([perm1, perm2, perm3, perm5, perm6, perm7])
 
         patient = roles['patient']
         physician = roles['physician']
@@ -130,7 +126,7 @@ def main():
 
         # associate permissions with roles
         patient.permissions.append(perm2)  # a patient can create an rx_request
-        physician.permissions.extend([perm1, perm3, perm4, perm5, perm7])
+        physician.permissions.extend([perm1, perm3, perm5, perm7])
         nurse_practitioner.permissions.append(perm6)
 
         # assign the users to roles

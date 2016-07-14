@@ -8,6 +8,7 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import (
+    aliased,
     relationship,
 )
 
@@ -29,7 +30,7 @@ The workflow / authorization policy is as follows:
     - A [physician] can [approve] or [deny] [prescription renewal requests]
 
     Resource-Level Authorization:
-    - A [physician] can [write] a new [prescription] for a [particular medicine] (let's imagine that it's a regulation, for this example)
+    - A [nurse_practitioner] can [write] a new [prescription] for a [particular medicine]
 """
 
 class User(Base):
@@ -79,7 +80,23 @@ def get_prescriptions(session, username):
     return session.query(Prescription).join(Prescription.patient).\
         filter(User.username == username)
 
-def get_pending_requests(session, physician_username):
-    return session.query(RxRenewalRequest).\
-        join(RxRenewalRequest.rx, Prescription.physician).\
-        filter(User.username == physician_username)
+def get_pending_patient_requests(session, patient):
+    return session.query(Prescription.title, RxRenewalRequest.created_dt).\
+        join(RxRenewalRequest.rx, Prescription.patient).\
+        filter(User.username == patient, RxRenewalRequest.status == 'requested')
+
+def get_pending_patient_requests(session, physician):
+
+    user_aliased = aliased(User)
+
+    return session.query(RxRenewalRequest.id,
+                         user_aliased.fullname.label('patient'),
+                         Prescription.title.label('prescription'),
+                         RxRenewalRequest.created_dt).\
+        join(RxRenewalRequest, RxRenewalRequest.rx_id == Prescription.id).\
+        join(User, Prescription.physician_id == User.id).\
+        join(user_aliased, Prescription.patient_id == user_aliased.id).\
+        filter(User.username == physician, RxRenewalRequest.status == 'requested')
+
+def approve_rx_requests(session, rx_requests):
+    
