@@ -5,6 +5,7 @@ from sqlalchemy import (
     String,
     func,
     ForeignKey,
+    update,
 )
 
 from sqlalchemy.orm import (
@@ -85,7 +86,7 @@ def get_pending_patient_requests(session, patient):
         join(RxRenewalRequest.rx, Prescription.patient).\
         filter(User.username == patient, RxRenewalRequest.status == 'requested')
 
-def get_pending_patient_requests(session, physician):
+def get_pending_physician_requests(session, physician):
 
     user_aliased = aliased(User)
 
@@ -93,10 +94,13 @@ def get_pending_patient_requests(session, physician):
                          user_aliased.fullname.label('patient'),
                          Prescription.title.label('prescription'),
                          RxRenewalRequest.created_dt).\
-        join(RxRenewalRequest, RxRenewalRequest.rx_id == Prescription.id).\
-        join(User, Prescription.physician_id == User.id).\
-        join(user_aliased, Prescription.patient_id == user_aliased.id).\
-        filter(User.username == physician, RxRenewalRequest.status == 'requested')
+        filter(RxRenewalRequest.rx_id == Prescription.id,
+               Prescription.physician_id == User.id,
+               Prescription.patient_id == user_aliased.id,
+               User.username == physician,
+               RxRenewalRequest.status == 'requested')
 
 def approve_rx_requests(session, rx_requests):
-    
+    session.query(RxRenewalRequest).\
+        filter(RxRenewalRequest.id.in_(rx_requests)).\
+        update({'status': 'approved'}, synchronize_session='fetch')

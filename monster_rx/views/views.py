@@ -12,6 +12,7 @@ from yosai.core import (
 
 from ..models import (
     add_rx_request,
+    approve_rx_requests,
     get_pending_patient_requests,
     get_pending_physician_requests,
 )
@@ -88,7 +89,9 @@ def request_rx(request):
 @view_config(route_name='rx_portal', renderer='../templates/pending_rx.jinja2')
 def rx_portal(request):
     if request.method == "POST":
-        print(request.POST)
+        approve_rx_requests(request.dbsession, request.POST)
+        next_url = request.route_url('rx_portal')
+        return HTTPFound(next_url)
 
     else:
         # current_username = Yosai.get_current_subject().primary_identifier

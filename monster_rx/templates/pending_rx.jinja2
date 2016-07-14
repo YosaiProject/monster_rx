@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="col-xs-8 col-lg-offset-2">
-
+    <h3>Pending Prescription Renewal Requests</h3>
   <form method="post" action="{{ 'rx_portal'|route_url }}">
     <table id="pending_rx_table"
            data-toggle="table"
@@ -11,16 +11,16 @@
            data-click-to-select="true">
         <thead>
           <tr>
-            <th data-field="approve" class="text-center">Approve</th>
-            <th data-field="patient" class="col-lg-6" data-sortable="true">Patient</th>
-            <th data-field="prescription" class="col-lg-6" data-sortable="true">Prescription</th>
-            <th data-field="created" class="col-lg-2">Time Requested</th>
+            <th data-field="approve" class="col-lg-1">Approve</th>
+            <th data-field="patient" class="col-lg-3" data-sortable="true">Patient</th>
+            <th data-field="prescription" class="col-lg-5" data-sortable="true">Prescription</th>
+            <th data-field="created" class="col-lg-3">Time Requested</th>
           </tr>
         </thead>
         <tbody>
             {% for result in results %}
             <tr>
-                <td><input type="checkbox" class="form" name="{{result.id}}"></input></td>
+                <td class='text-center'><input type="checkbox" class="form" name="{{result.id}}"></input></td>
                 <td>{{result.patient}}</td>
                 <td>{{result.prescription}}</td>
                 <td>{{result.created_dt}}</td>
