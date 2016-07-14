@@ -13,6 +13,7 @@ from .models import (
     get_pending_physician_requests,
     get_prescriptions,
     add_rx_request,
+    create_rx,
 )
 
 configure_mappers()

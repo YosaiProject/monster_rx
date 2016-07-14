@@ -91,4 +91,4 @@ def main(argv=sys.argv):
                             num_fills=0,
                             created_dt=(datetime.now() - timedelta(days=30)))]
 
-        dbsession.add_all(users + meds + rxs)
+        dbsession.add_all(users + meds) # + rxs)

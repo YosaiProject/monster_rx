@@ -5,3 +5,5 @@ def includeme(config):
     config.add_route('launchpad', '/launchpad')
     config.add_route('request_rx', '/request_rx')
     config.add_route('rx_portal', '/rx_portal')
+    config.add_route('pending_rx', '/pending_rx')
+    config.add_route('write_rx', '/write_rx')

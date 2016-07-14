@@ -1,0 +1,22 @@
+{% extends "monster_rx:templates/layout.jinja2" %}
+
+{% block content %}
+
+{% if 'physician' in roles %}
+<div class="col-xs-offset-1 col-lg-5">
+<a href="{{ 'pending_rx'|route_url }}">
+<img src="{{request.static_url('monster_rx:static/img/pending_rx.png')}}" class="launchpad_img">
+</a>
+</div>
+{% endif %}
+
+{% if 'physician' in roles or 'nurse_practitioner' in roles %}
+<div class="col-xs-offset-1 col-lg-5">
+<a href="{{ 'write_rx'|route_url }}">
+<img src="{{request.static_url('monster_rx:static/img/write_rx.png')}}" class="launchpad_img">
+</a>
+</div>
+{% endif %}
+
+</div>
+{% endblock content %}

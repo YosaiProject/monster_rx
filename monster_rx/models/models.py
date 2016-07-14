@@ -50,12 +50,12 @@ class Medicine(Base):
 class Prescription(Base):
     __tablename__ = 'prescription'
     id = Column(Integer, primary_key=True)
-    physician_id = Column(Integer, ForeignKey('user.id'))
-    patient_id = Column(Integer, ForeignKey('user.id'))
-    medicine_id = Column(Integer, ForeignKey('medicine.id'))
-    title = Column(String(100))
-    fill_qty = Column(Integer)
-    num_fills = Column(Integer)
+    physician_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    patient_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    medicine_id = Column(Integer, ForeignKey('medicine.id'), nullable=False)
+    title = Column(String(100), nullable=False)
+    fill_qty = Column(Integer, nullable=False)
+    num_fills = Column(Integer, nullable=False)
     created_dt = Column(DateTime, default=func.now())
 
     medicine = relationship('Medicine', foreign_keys=[medicine_id])
@@ -104,3 +104,14 @@ def approve_rx_requests(session, rx_requests):
     session.query(RxRenewalRequest).\
         filter(RxRenewalRequest.id.in_(rx_requests)).\
         update({'status': 'approved'}, synchronize_session='fetch')
+
+
+def create_rx(session, physician, medicine, patient, title, fill_qty, num_fills):
+    physician = session.query(User).filter(User.username == physician).first()
+    new_rx = Prescription(medicine=medicine,
+                          physician=physician,
+                          patient=patient,
+                          title=title,
+                          fill_qty=fill_qty,
+                          num_fills=num_fills)
+    session.add(new_rx)

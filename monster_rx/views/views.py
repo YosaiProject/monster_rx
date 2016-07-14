@@ -1,4 +1,4 @@
-from ..forms import RxRequestForm
+from ..forms import RxRequestForm, WriteRXForm
 from pyramid_yosai import LoginForm
 from pyramid.view import view_config
 
@@ -15,9 +15,8 @@ from ..models import (
     approve_rx_requests,
     get_pending_patient_requests,
     get_pending_physician_requests,
+    create_rx,
 )
-
-from pyramid.response import Response
 
 
 @view_config(route_name='home')
@@ -85,9 +84,21 @@ def request_rx(request):
                 'results': results,
                 'user': current_username}
 
-
-@view_config(route_name='rx_portal', renderer='../templates/pending_rx.jinja2')
+@view_config(route_name='rx_portal', renderer='../templates/rx_portal.jinja2')
 def rx_portal(request):
+    # subject = Yosai.get_current_subject()
+    # check_roles = subject.has_roles(['doctor', 'patient'])
+
+    # check_roles looks like:  [('role_name', Boolean), ...]
+    # roles = [role for role, check in filter(lambda x: x[1], check_roles)]
+
+    roles = ['physician', 'patient']
+
+    return {'roles': roles}
+
+
+@view_config(route_name='pending_rx', renderer='../templates/pending_rx.jinja2')
+def pending_rx(request):
     if request.method == "POST":
         approve_rx_requests(request.dbsession, request.POST)
         next_url = request.route_url('rx_portal')
@@ -100,31 +111,34 @@ def rx_portal(request):
 
         return {'results': results}
 
-# @view_config(route_name='create_rx', renderer='../templates/create_rx.jinja2')
-# def create_rx(request):
 
-#    create_rx_form = CreateRXForm(request.POST, context={'request': request})
+@view_config(route_name='write_rx', renderer='../templates/write_rx.jinja2')
+def write_rx(request):
 
-#    if request.method == "POST" and login_form.validate():
+    write_rx_form = WriteRXForm(request.POST, context={'request': request})
 
-#        create_rx_form.field.data
+    if request.method == "POST" and write_rx_form.validate():
 
-#        prescription = Prescription(...)
+        # current_username = Yosai.get_current_subject().primary_identifier
+        current_username = 'drmoozy' # temporary
 
-#        request.dbsession.add(prescription)
+        create_rx(request.dbsession,
+                  current_username,
+                  write_rx_form.data['medicine'],
+                  write_rx_form.data['patient'],
+                  write_rx_form.data['title'],
+                  write_rx_form.data['fill_qty'],
+                  write_rx_form.data['num_fills'])
+
+        next_url = request.route_url('write_rx')
+        return HTTPFound(location=next_url)
+
+    else:
+
+        return {'write_rx_form': write_rx_form}
 
         # When a prescription gets created, a new resource-level permission could be
         # created in the yosai database, allowing resource-level authorization
         # for that new rx. However, time has not yet allowed support for adding new
         # resource to the yosai db.  Adding this to TO-DO.
         #resource = ResourceModel(name=prescription.id)
-        # yosai_session
-
-
-
-#    rx_refill_form = RxRefillForm(request.POST, context={'request': request})
-    # requires an rx_id to refill
-    # get patient's prescriptions from db
-    # if request method = POST, the patient has submitted a form request that
-    # contains the prescription that the refill request will be submitted for
-    # otherwise, display a prescription refill request form
