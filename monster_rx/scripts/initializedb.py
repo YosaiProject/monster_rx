@@ -18,7 +18,6 @@ from ..models import (
 )
 
 from ..models import (
-    RxRenewalRequest,
     User,
     Medicine,
     Prescription,
@@ -59,6 +58,7 @@ def main(argv=sys.argv):
                 Medicine(title='Cherry Jelly Bean'),
                 Medicine(title='Strawberry Jelly Bean')]
 
+        """
         rxs = [Prescription(physician=users[1],
                             patient=users[0],
                             medicine=meds[0],
@@ -90,5 +90,6 @@ def main(argv=sys.argv):
                             fill_qty=30,
                             num_fills=0,
                             created_dt=(datetime.now() - timedelta(days=30)))]
+        """
 
-        dbsession.add_all(users + meds) # + rxs)
+        dbsession.add_all(users + meds)

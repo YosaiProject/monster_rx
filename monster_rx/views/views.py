@@ -101,7 +101,7 @@ def rx_portal(request):
 def pending_rx(request):
     if request.method == "POST":
         approve_rx_requests(request.dbsession, request.POST)
-        next_url = request.route_url('rx_portal')
+        next_url = request.route_url('pending_rx')
         return HTTPFound(next_url)
 
     else:
