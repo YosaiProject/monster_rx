@@ -3,7 +3,7 @@ from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from pyramid.threadlocal import get_current_request
 
-from pyramid_yosai import YosaiForm
+# from pyramid_yosai import YosaiForm 
 
 from ..models import (
     get_prescriptions,
@@ -24,7 +24,7 @@ def _get_prescriptions():
     return get_prescriptions(session, current_username).all()
 
 
-class RxRequestForm(YosaiForm):
+class RxRequestForm(wtforms.Form):
 
     id = wtforms.HiddenField('id')
 
@@ -46,7 +46,7 @@ def _get_meds():
     return session.query(Medicine).all()
 
 
-class WriteRXForm(YosaiForm):
+class WriteRXForm(wtforms.Form):
 
     patient = QuerySelectField('Patient',
                                query_factory=lambda: _get_users(),

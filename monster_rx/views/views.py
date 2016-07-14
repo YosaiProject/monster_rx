@@ -49,10 +49,10 @@ def login(request):
 
         except AuthenticationException:
             # request.session.flash('Invalid Login Credentials.')
-            return {'form': login_form}
+            return {'login_form': login_form}
 
     else:
-        return {'form': login_form}
+        return {'login_form': login_form}
 
 
 # requires_user
