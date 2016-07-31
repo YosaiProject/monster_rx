@@ -21,7 +21,9 @@ from ..models import (
 
 @view_config(route_name='home')
 def home(request):
+
     subject = Yosai.get_current_subject()
+
     if subject.authenticated:
         next_url = request.route_url('launchpad')
     else:
@@ -58,13 +60,11 @@ def login(request):
 # requires_user
 @view_config(route_name='launchpad', renderer='../templates/launchpad.jinja2')
 def launchpad(request):
-    # subject = Yosai.get_current_subject()
-    # check_roles = subject.has_roles(['doctor', 'patient'])
+    subject = Yosai.get_current_subject()
+    check_roles = subject.has_role(['physician', 'patient', 'nurse_practitioner'])
 
     # check_roles looks like:  [('role_name', Boolean), ...]
-    # roles = [role for role, check in filter(lambda x: x[1], check_roles)]
-
-    roles = ['physician', 'patient']
+    roles = [role for role, check in filter(lambda x: x[1], check_roles)]
 
     return {'roles': roles}
 

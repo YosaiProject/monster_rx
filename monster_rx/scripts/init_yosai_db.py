@@ -64,7 +64,7 @@ def main():
         # yes, the user model is redundant but I ran out of time making this
         users = [UserModel(first_name='Bubzy', last_name='Monster', identifier='bubzy'),
                  UserModel(first_name='Moozy', last_name='Monster', identifier='drmoozy'),
-                 UserModel(first_name='Maxter', last_name='Monster', identifier='drmax')]
+                 UserModel(first_name='Maxter', last_name='Monster', identifier='nursemax')]
 
         domains = [DomainModel(name='prescription'),
                    DomainModel(name='medicine'),
@@ -136,5 +136,5 @@ def main():
         bubzy = users['bubzy']
         bubzy.roles.append(patient)
 
-        drmax = users['drmax']
-        drmax.roles.append(nurse_practitioner)
+        drmax = users['nursemax']
+        drmax.roles.extend([nurse_practitioner, patient])
