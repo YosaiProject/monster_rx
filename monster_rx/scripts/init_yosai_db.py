@@ -41,13 +41,13 @@ The workflow / authorization policy is as follows:
     Domain-Level Authorization:
     - A [patient] can [request] a [prescription renewal].
 
-    - A [physician] can [prescribe] any [medicine]
+    - A [physician] can [write] any [prescription]
     - A [physician] can [view] [prescriptions]
     - A [physician] can [view] [pending prescription renewal requests]
     - A [physician] can [approve] or [deny] [prescription renewal requests]
 
     Resource-Level Authorization:
-    - A [nurse_practitioner] can [prescribe] a [particular_medicine]
+    - A [nurse_practitioner] can [write] a [prescription] for a [particular_medicine]
         (for instance, the Sudafed equivalent for monsters?)
 """
 
@@ -71,7 +71,7 @@ def main():
                    DomainModel(name='rx_request')]
 
         actions = [ActionModel(name='create'),
-                   ActionModel(name='prescribe'),
+                   ActionModel(name='write'),
                    ActionModel(name='approve'),
                    ActionModel(name='view')]
 
@@ -111,12 +111,12 @@ def main():
         perm5 = PermissionModel(domain=domains['rx_request'],
                                 action=actions['view'])
 
-        perm6 = PermissionModel(domain=domains['medicine'],
-                                action=actions['prescribe'],
-                                resource=resources['1'])  # resource-level perm for first rx
+        perm6 = PermissionModel(domain=domains['prescription'],
+                                action=actions['write'],
+                                resource=resources['1'])  # resource-level perm for first medicine 
 
-        perm7 = PermissionModel(domain=domains['medicine'],
-                                action=actions['prescribe'])
+        perm7 = PermissionModel(domain=domains['prescription'],
+                                action=actions['write'])
 
         dbsession.add_all([perm1, perm2, perm3, perm5, perm6, perm7])
 

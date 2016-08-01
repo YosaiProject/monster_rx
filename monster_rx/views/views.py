@@ -7,8 +7,9 @@ from pyramid.httpexceptions import HTTPFound
 from yosai.core import (
     AuthenticationException,
     UsernamePasswordToken,
-    Yosai,
 )
+
+from yosai.web import WebYosai
 
 from ..models import (
     add_rx_request,
@@ -22,7 +23,7 @@ from ..models import (
 @view_config(route_name='home')
 def home(request):
 
-    subject = Yosai.get_current_subject()
+    subject = WebYosai.get_current_subject()
 
     if subject.authenticated:
         next_url = request.route_url('launchpad')
@@ -43,7 +44,7 @@ def login(request):
                                             password=login_form.password.data)
 
         try:
-            subject = Yosai.get_current_subject()
+            subject = WebYosai.get_current_subject()
             subject.login(authc_token)
 
             next_url = request.route_url('launchpad')
@@ -57,20 +58,21 @@ def login(request):
         return {'login_form': login_form}
 
 
-# requires_user
 @view_config(route_name='launchpad', renderer='../templates/launchpad.jinja2')
-def launchpad(request):
-    subject = Yosai.get_current_subject()
-    check_roles = subject.has_role(['physician', 'patient', 'nurse_practitioner'])
+@WebYosai.requires_user
+def launchpad(context, request):
+    subject = WebYosai.get_current_subject()
 
     # check_roles looks like:  [('role_name', Boolean), ...]
+    check_roles = subject.has_role(['physician', 'patient', 'nurse_practitioner'])
     roles = [role for role, check in filter(lambda x: x[1], check_roles)]
 
     return {'roles': roles}
 
 
 @view_config(route_name='request_rx', renderer='../templates/request_rx.jinja2')
-def request_rx(request):
+@WebYosai.requires_permission(['rx_request:create'])
+def request_rx(context, request):
 
     rx_request_form = RxRequestForm(request.POST)
 
@@ -81,51 +83,51 @@ def request_rx(request):
         next_url = request.route_url('request_rx')
         return HTTPFound(next_url)
     else:
-        # current_username = Yosai.get_current_subject().primary_identifier
-        current_username = 'bubzy' # temporary
-        results = get_pending_patient_requests(request.dbsession, current_username).all()
+        current_username = WebYosai.get_current_subject().primary_identifier
+        results = get_pending_patient_requests(request.dbsession,
+                                               current_username).all()
 
         return {'rx_request_form': rx_request_form,
                 'results': results,
                 'user': current_username}
 
 @view_config(route_name='rx_portal', renderer='../templates/rx_portal.jinja2')
-def rx_portal(request):
-    # subject = Yosai.get_current_subject()
-    # check_roles = subject.has_roles(['doctor', 'patient'])
+@WebYosai.requires_role(['physician', 'nurse_practitioner'], logical_operator=any)
+def rx_portal(context, request):
+    subject = WebYosai.get_current_subject()
 
     # check_roles looks like:  [('role_name', Boolean), ...]
-    # roles = [role for role, check in filter(lambda x: x[1], check_roles)]
-
-    roles = ['physician', 'patient']
+    check_roles = subject.has_role(['physician', 'nurse_practitioner'])
+    roles = [role for role, check in filter(lambda x: x[1], check_roles)]
 
     return {'roles': roles}
 
 
 @view_config(route_name='pending_rx', renderer='../templates/pending_rx.jinja2')
-def pending_rx(request):
+@WebYosai.requires_permission(['rx_request:view'])
+def pending_rx(context, request):
     if request.method == "POST":
         approve_rx_requests(request.dbsession, request.POST)
         next_url = request.route_url('pending_rx')
         return HTTPFound(next_url)
 
     else:
-        # current_username = Yosai.get_current_subject().primary_identifier
-        current_username = 'drmoozy' # temporary
-        results = get_pending_physician_requests(request.dbsession, current_username).all()
+        current_username = WebYosai.get_current_subject().primary_identifier
+        results = get_pending_physician_requests(request.dbsession,
+                                                 current_username).all()
 
         return {'results': results}
 
 
-@view_config(route_name='write_rx', renderer='../templates/write_rx.jinja2')
-def write_rx(request):
+@view_config(route_name='write_rx', request_method='POST')
+@WebYosai.requires_dynamic_permission(['prescription:write:{medicine_id}'])
+def write_rx(context, request):
 
     write_rx_form = WriteRXForm(request.POST, context={'request': request})
 
-    if request.method == "POST" and write_rx_form.validate():
+    if write_rx_form.validate():
 
-        # current_username = Yosai.get_current_subject().primary_identifier
-        current_username = 'drmoozy' # temporary
+        current_username = WebYosai.get_current_subject().primary_identifier
 
         create_rx(request.dbsession,
                   current_username,
@@ -135,15 +137,19 @@ def write_rx(request):
                   write_rx_form.data['fill_qty'],
                   write_rx_form.data['num_fills'])
 
-        next_url = request.route_url('write_rx')
-        return HTTPFound(location=next_url)
-
-    else:
-
-        return {'write_rx_form': write_rx_form}
-
         # When a prescription gets created, a new resource-level permission could be
         # created in the yosai database, allowing resource-level authorization
         # for that new rx. However, time has not yet allowed support for adding new
         # resource to the yosai db.  Adding this to TO-DO.
         #resource = ResourceModel(name=prescription.id)
+
+        next_url = request.route_url('write_rx_form')
+        return HTTPFound(location=next_url)
+
+
+@view_config(route_name='write_rx_form',
+             renderer='../templates/write_rx.jinja2')
+@WebYosai.requires_role(['physician', 'nurse_practitioner'], logical_operator=any)
+def write_rx_form(context, request):
+    write_rx_form = WriteRXForm(None, context={'request': request})
+    return {'write_rx_form': write_rx_form}
