@@ -1,3 +1,5 @@
+import pdb
+
 from ..forms import RxRequestForm, WriteRXForm
 from pyramid_yosai import LoginForm
 from pyramid.view import view_config
@@ -83,7 +85,7 @@ def request_rx(context, request):
         next_url = request.route_url('request_rx')
         return HTTPFound(next_url)
     else:
-        current_username = WebYosai.get_current_subject().primary_identifier
+        current_username = WebYosai.get_current_subject().identifiers.primary_identifier
         results = get_pending_patient_requests(request.dbsession,
                                                current_username).all()
 
@@ -112,7 +114,7 @@ def pending_rx(context, request):
         return HTTPFound(next_url)
 
     else:
-        current_username = WebYosai.get_current_subject().primary_identifier
+        current_username = WebYosai.get_current_subject().identifiers.primary_identifier
         results = get_pending_physician_requests(request.dbsession,
                                                  current_username).all()
 
@@ -127,7 +129,7 @@ def write_rx(context, request):
 
     if write_rx_form.validate():
 
-        current_username = WebYosai.get_current_subject().primary_identifier
+        current_username = WebYosai.get_current_subject().identifiers.primary_identifier
 
         create_rx(request.dbsession,
                   current_username,
@@ -151,5 +153,5 @@ def write_rx(context, request):
              renderer='../templates/write_rx.jinja2')
 @WebYosai.requires_role(['physician', 'nurse_practitioner'], logical_operator=any)
 def write_rx_form(context, request):
-    write_rx_form = WriteRXForm(None, context={'request': request})
+    write_rx_form = WriteRXForm(request.POST, context={'request': request})
     return {'write_rx_form': write_rx_form}
