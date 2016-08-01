@@ -9,6 +9,7 @@ Getting Started
 - $VENV/bin/pip install -e .
 
 - $VENV/bin/initialize_monster_rx_db development.ini
+- $VENV/bin/initialize_monster_rx_yosai_db
 
 - $VENV/bin/pserve development.ini
 
