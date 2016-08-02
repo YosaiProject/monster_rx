@@ -20,10 +20,10 @@
     left: 200px;
     display: inline-block;
     margin: 0 auto;
-    
+
     -webkit-border-radius: 10px;
-    
-    -webkit-box-shadow: 
+
+    -webkit-box-shadow:
         0px 3px rgba(128,128,128,1), /* gradient effects */
         0px 4px rgba(118,118,118,1),
         0px 5px rgba(108,108,108,1),
@@ -31,73 +31,73 @@
         0px 7px rgba(88,88,88,1),
         0px 8px rgba(78,78,78,1),
         0px 14px 6px -1px rgba(128,128,128,1); /* shadow */
-    
+
     -webkit-transition: -webkit-box-shadow .1s ease-in-out;
-} 
+}
 
 .button span {
     background-color: #E8E8E8;
-    
-    background-image: 
+
+    background-image:
         /* gloss gradient */
         -webkit-gradient(
-            linear, 
-            left bottom, 
-            left top, 
-            color-stop(50%,rgba(255,255,255,0)), 
-            color-stop(50%,rgba(255,255,255,0.3)), 
+            linear,
+            left bottom,
+            left top,
+            color-stop(50%,rgba(255,255,255,0)),
+            color-stop(50%,rgba(255,255,255,0.3)),
             color-stop(100%,rgba(255,255,255,0.2))),
-        
+
         /* dark outside gradient */
         -webkit-gradient(
-            linear, 
-            left top, 
-            right top, 
-            color-stop(0%,rgba(210,210,210,0.3)), 
-            color-stop(20%,rgba(210,210,210,0)), 
-            color-stop(80%,rgba(210,210,210,0)), 
+            linear,
+            left top,
+            right top,
+            color-stop(0%,rgba(210,210,210,0.3)),
+            color-stop(20%,rgba(210,210,210,0)),
+            color-stop(80%,rgba(210,210,210,0)),
             color-stop(100%,rgba(210,210,210,0.3))),
-        
+
         /* light inner gradient */
         -webkit-gradient(
-            linear, 
-            left top, 
-            right top, 
-            color-stop(0%,rgba(255,255,255,0)), 
-            color-stop(20%,rgba(255,255,255,0.5)), 
-            color-stop(80%,rgba(255,255,255,0.5)), 
-            color-stop(100%,rgba(255,255,255,0))),        
-        
+            linear,
+            left top,
+            right top,
+            color-stop(0%,rgba(255,255,255,0)),
+            color-stop(20%,rgba(255,255,255,0.5)),
+            color-stop(80%,rgba(255,255,255,0.5)),
+            color-stop(100%,rgba(255,255,255,0))),
+
         /* diagonal line pattern */
         -webkit-gradient(
-            linear, 
-            0% 100%, 
-            100% 0%, 
-            color-stop(0%,rgba(255,255,255,0)), 
-            color-stop(40%,rgba(255,255,255,0)), 
-            color-stop(40%,#D2D2D1), 
-            color-stop(60%,#D2D2D1), 
-            color-stop(60%,rgba(255,255,255,0)), 
+            linear,
+            0% 100%,
+            100% 0%,
+            color-stop(0%,rgba(255,255,255,0)),
+            color-stop(40%,rgba(255,255,255,0)),
+            color-stop(40%,#D2D2D1),
+            color-stop(60%,#D2D2D1),
+            color-stop(60%,rgba(255,255,255,0)),
             color-stop(100%,rgba(255,255,255,0)));
-    
+
         -webkit-box-shadow:
             0px -1px #fff, /* top highlight */
             0px 1px 1px #FFFFFF; /* bottom edge */
-    
+
     -webkit-background-size: 100%, 100%, 100%, 4px 4px;
-    
+
     -webkit-border-radius: 10px;
     -webkit-transition: -webkit-transform .1s ease-in-out;
-    
+
     display: inline-block;
     padding: 10px 40px 10px 40px;
-    
+
     color: #3A474D;
     text-transform: uppercase;
     font-family: 'TradeGothicLTStd-BdCn20','PT Sans Narrow';
     font-weight: 700;
     font-size: 32px;
-    
+
     text-shadow: 0px 1px #fff, 0px -1px #262F33;
 }
 
@@ -108,7 +108,7 @@
         }
 
         .button:active {
-            -webkit-box-shadow: 
+            -webkit-box-shadow:
                 0px 3px rgba(128,128,128,1),
                 0px 4px rgba(118,118,118,1),
                 0px 5px rgba(108,108,108,1),
@@ -127,14 +127,88 @@
         display: block;
         width: 10px;
         height: 10px;
-    
+
         position: absolute;
         right: 14px;
-        top: 12px;    
-        
+        top: 12px;
+
         font-family: 'Cabin';
         font-weight: 700;
         color: #AEBF3B;
         text-shadow: 0px 1px #fff, 0px -1px #97A63A;
         font-size: 26px;
     }
+
+@-webkit-keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@-moz-keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@-o-keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.m-progress {
+    position: relative;
+    opacity: .8;
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
+.m-progress:hover,
+.m-progress:active,
+.m-progress:focus {
+    cursor: default;
+    color: transparent;
+    outline: none !important;
+    box-shadow: none;
+}
+
+.m-progress:before {
+    content: '';
+
+    display: inline-block;
+
+    position: absolute;
+    background: transparent;
+    border: 1px solid #fff;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+
+    box-sizing: border-box;
+
+    top: 50%;
+    left: 50%;
+    margin-top: -12px;
+    margin-left: 20px;
+
+    width: 24px;
+    height: 24px;
+
+    -webkit-animation: ld .45s linear infinite;
+    -moz-animation:    ld .45s linear infinite;
+    -o-animation:      ld .45s linear infinite;
+    animation:         ld .45s linear infinite;
+}
+
+.btn-default.m-progress:before {
+    border-left-color: #ffffff;
+    border-right-color: #ffffff;
+}
+
+
+.m-progress:after {
+    content: "Loading";
+    color: white;
+    margin-left: -70px;
+    padding-right: 35px;
+}

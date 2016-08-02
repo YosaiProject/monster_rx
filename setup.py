@@ -14,7 +14,7 @@ class CleanCommand(Command):
         pass
 
     def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
+        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info monster_rx.sqlite yosai_accounts.db')
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.txt')) as f:

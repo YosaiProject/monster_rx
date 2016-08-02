@@ -11,6 +11,8 @@ from ..models import (
     Medicine,
 )
 
+from yosai.web import WebYosai
+
 
 def strip_filter(value):
     return value.strip() if value else None
@@ -19,8 +21,8 @@ def strip_filter(value):
 def _get_prescriptions():
     session = get_current_request().dbsession
 
-    # current_username = Yosai.get_current_subject().primary_identifier
-    current_username = 'bubzy' # temporary
+    current_user = WebYosai.get_current_subject()
+    current_username = current_user.identifiers.primary_identifier
     return get_prescriptions(session, current_username).all()
 
 

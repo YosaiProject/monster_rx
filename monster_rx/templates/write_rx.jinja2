@@ -12,17 +12,44 @@
         </div>
         <div class="panel-body">
 
-            <form action="{{request.route_url('write_rx')}}"
-                  method="POST" role="form" class="form-horizontal">
+            <form id="writerx_form" role="form" class="form-horizontal">
                 {{form.render_form(write_rx_form)}}
-            <button type="submit" class="btn btn-default col-sm-offset-3 btn-primary">
-                Create Rx
-            </button>
+            <div class="row">
+                <div class="col-md-offset-2 col-md-4">
+                    <button id="write_rx_btn" type="button"
+                     class="btn btn-default btn-primary">Create Rx</button>
+                </div>
+                <div class="status_msg col-md-6"></div>
+            </div>
         </form>
 
         </div>
     </div>
 </div>
-
-
 {% endblock content %}
+
+{% block footer_script %}
+<script>
+    "use strict";
+    $('#write_rx_btn').click(function(){
+
+        $("div.status_msg").html(function() {
+          return "<p></p>";
+        });
+
+        $('#write_rx_btn').addClass("m-progress");
+
+        $('#writerx_form').ajaxSubmit({
+            url: "{{request.route_url('write_rx')}}",
+            type: "post",
+
+            success: function(data){
+                var content = $("<h4>").text(data.status_msg);
+                $("div.status_msg").append(content);
+
+                $('#write_rx_btn').removeClass("m-progress");
+              }
+        });
+    });
+</script>
+{% endblock footer_script %}

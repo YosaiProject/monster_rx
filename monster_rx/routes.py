@@ -7,3 +7,4 @@ def includeme(config):
     config.add_route('rx_portal', '/rx_portal')
     config.add_route('pending_rx', '/pending_rx')
     config.add_route('write_rx', '/write_rx')
+    config.add_route('write_rx_form', '/write_rx_form')

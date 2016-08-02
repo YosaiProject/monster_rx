@@ -1,3 +1,4 @@
+import pdb
 from ..forms import RxRequestForm, WriteRXForm
 from pyramid_yosai import LoginForm
 from pyramid.view import view_config
@@ -123,8 +124,16 @@ def pending_rx(context, request):
         return {'results': results}
 
 
-@view_config(route_name='write_rx',
+@view_config(route_name='write_rx_form',
              renderer='../templates/write_rx.jinja2')
+def write_rx_form(context, request):
+
+    write_rx_form = WriteRXForm(None, context={'request': request})
+
+    return {'write_rx_form': write_rx_form}
+
+
+@view_config(route_name='write_rx', renderer='json')
 def write_rx(context, request):
 
     write_rx_form = WriteRXForm(request.POST, context={'request': request})
@@ -146,8 +155,8 @@ def write_rx(context, request):
             raise HTTPUnauthorized(msg)
 
         except AuthorizationException:
-            msg = "Access Denied.  Insufficient Permissions."
-            raise HTTPForbidden(msg)
+            status_msg = "Access Denied.  Insufficient Permission."
+            return {'status_msg': status_msg}
 
         current_username = current_user.identifiers.primary_identifier
 
@@ -165,7 +174,4 @@ def write_rx(context, request):
         # resource to the yosai db.  Adding this to TO-DO.
         #resource = ResourceModel(name=prescription.id)
 
-        next_url = request.route_url('write_rx')
-        return HTTPFound(location=next_url)
-
-    return {'write_rx_form': write_rx_form}
+        return {'status_msg': 'Successfully Wrote Rx'}
