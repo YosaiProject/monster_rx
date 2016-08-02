@@ -1,14 +1,15 @@
-import pdb
-
 from ..forms import RxRequestForm, WriteRXForm
 from pyramid_yosai import LoginForm
 from pyramid.view import view_config
 
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPUnauthorized
 
 from yosai.core import (
     AuthenticationException,
+    AuthorizationException,
+    IdentifiersNotSetException,
     UsernamePasswordToken,
+    load_logconfig,
 )
 
 from yosai.web import WebYosai
@@ -21,6 +22,7 @@ from ..models import (
     create_rx,
 )
 
+load_logconfig()
 
 @view_config(route_name='home')
 def home(request):
@@ -121,15 +123,33 @@ def pending_rx(context, request):
         return {'results': results}
 
 
-@view_config(route_name='write_rx', request_method='POST')
-@WebYosai.requires_dynamic_permission(['prescription:write:{medicine_id}'])
+@view_config(route_name='write_rx',
+             renderer='../templates/write_rx.jinja2')
 def write_rx(context, request):
 
     write_rx_form = WriteRXForm(request.POST, context={'request': request})
 
-    if write_rx_form.validate():
+    if request.method == 'POST' and write_rx_form.validate():
 
-        current_username = WebYosai.get_current_subject().identifiers.primary_identifier
+        medicine = write_rx_form.data['medicine'].id
+        perm = 'prescription:write:{0}'.format(medicine)
+
+        current_user = WebYosai.get_current_subject()
+        try:
+            current_user.check_permission([perm])
+
+        except IdentifiersNotSetException:
+            msg = ("Attempting to perform a user-only operation.  The "
+                   "current Subject is NOT a user (they haven't been "
+                   "authenticated or remembered from a previous login). "
+                   "ACCESS DENIED.")
+            raise HTTPUnauthorized(msg)
+
+        except AuthorizationException:
+            msg = "Access Denied.  Insufficient Permissions."
+            raise HTTPForbidden(msg)
+
+        current_username = current_user.identifiers.primary_identifier
 
         create_rx(request.dbsession,
                   current_username,
@@ -145,13 +165,7 @@ def write_rx(context, request):
         # resource to the yosai db.  Adding this to TO-DO.
         #resource = ResourceModel(name=prescription.id)
 
-        next_url = request.route_url('write_rx_form')
+        next_url = request.route_url('write_rx')
         return HTTPFound(location=next_url)
 
-
-@view_config(route_name='write_rx_form',
-             renderer='../templates/write_rx.jinja2')
-@WebYosai.requires_role(['physician', 'nurse_practitioner'], logical_operator=any)
-def write_rx_form(context, request):
-    write_rx_form = WriteRXForm(request.POST, context={'request': request})
     return {'write_rx_form': write_rx_form}

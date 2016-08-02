@@ -3,7 +3,7 @@ from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from pyramid.threadlocal import get_current_request
 
-# from pyramid_yosai import YosaiForm 
+# from pyramid_yosai import YosaiForm
 
 from ..models import (
     get_prescriptions,
@@ -35,25 +35,25 @@ class RxRequestForm(wtforms.Form):
 
 def _get_users():
     # a physician can write its own Rx!  serious jelly bean abuse may ensue...
-    session = get_current_request().dbsession
+    dbsession = get_current_request().dbsession
 
-    return session.query(User).all()
+    return dbsession.query(User)
 
 
 def _get_meds():
-    session = get_current_request().dbsession
+    dbsession = get_current_request().dbsession
 
-    return session.query(Medicine).all()
+    return dbsession.query(Medicine)
 
 
 class WriteRXForm(wtforms.Form):
 
     patient = QuerySelectField('Patient',
-                               query_factory=lambda: _get_users(),
+                               query_factory=lambda: _get_users().all(),
                                get_label='fullname')
 
     medicine = QuerySelectField('Medicine',
-                                query_factory=lambda: _get_meds(),
+                                query_factory=lambda: _get_meds().all(),
                                 get_label='title')
 
     title = wtforms.StringField("Title",
