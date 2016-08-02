@@ -2,6 +2,13 @@
 {% import 'monster_rx:templates/forms.jinja2' as form %}
 
 {% block content %}
+<div class="row">
+    <div class="col-lg-offset-4 col-lg-12">
+        <img class="monster_rx_logo"
+             src="{{request.static_url('monster_rx:static/img/monster_rx_logo.png')}}">
+        </img>
+    </div>
+</div>
 <div class="panel-body">
 
         <form action="{{ 'login'|route_url }}"
