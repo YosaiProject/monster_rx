@@ -50,7 +50,7 @@ def main(argv=sys.argv):
         # yes, the user model is redundant but I ran out of time making this
         users = [User(username='bubzy', fullname='Bubzy Monster'),
                  User(username='drmoozy', fullname='Dr. Moozy Monster'),
-                 User(username='nursemax', fullname='Maxter Monster')]
+                 User(username='nursemax', fullname='Nurse Maxter Monster')]
 
         meds = [Medicine(title='Cinnamon Jelly Bean'),
                 Medicine(title='Blueberry Jelly Bean'),

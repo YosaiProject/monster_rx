@@ -12,6 +12,7 @@ from ..models import (
 )
 
 from yosai.web import WebYosai
+from pyramid_yosai import YosaiForm
 
 
 def strip_filter(value):
@@ -26,7 +27,7 @@ def _get_prescriptions():
     return get_prescriptions(session, current_username).all()
 
 
-class RxRequestForm(wtforms.Form):
+class RxRequestForm(YosaiForm):
 
     id = wtforms.HiddenField('id')
 
@@ -48,7 +49,7 @@ def _get_meds():
     return dbsession.query(Medicine)
 
 
-class WriteRXForm(wtforms.Form):
+class WriteRXForm(YosaiForm):
 
     patient = QuerySelectField('Patient',
                                query_factory=lambda: _get_users().all(),

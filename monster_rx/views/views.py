@@ -41,7 +41,7 @@ def home(request):
 @view_config(route_name='login', renderer='../templates/login.jinja2')
 def login(request):
 
-    login_form = LoginForm(request.POST, context={'request': request})
+    login_form = LoginForm(request.POST)
 
     if request.method == "POST" and login_form.validate():
 
@@ -128,7 +128,7 @@ def pending_rx(context, request):
              renderer='../templates/write_rx.jinja2')
 def write_rx_form(context, request):
 
-    write_rx_form = WriteRXForm(None, context={'request': request})
+    write_rx_form = WriteRXForm(None)
 
     return {'write_rx_form': write_rx_form}
 
@@ -136,7 +136,7 @@ def write_rx_form(context, request):
 @view_config(route_name='write_rx', renderer='json')
 def write_rx(context, request):
 
-    write_rx_form = WriteRXForm(request.POST, context={'request': request})
+    write_rx_form = WriteRXForm(request.POST)
 
     if request.method == 'POST' and write_rx_form.validate():
 
