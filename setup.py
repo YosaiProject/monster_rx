@@ -31,7 +31,7 @@ requires = [
     'waitress',
     'wtforms',
     'yosai_alchemystore',
-    # 'pyramid_yosai',
+    'pyramid_yosai',
     ]
 
 setup(name='monster_rx',
