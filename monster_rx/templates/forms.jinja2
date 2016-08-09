@@ -13,23 +13,29 @@
             {% endif %}
 
             {% if field.type == 'FormField' %}
-                <div class="form-group subform" id="field-{{field.name}}">
-                    {{render_form(field)}}
-                </div>
-{#                {% continue %}#}
+                    <div class="form-group subform" id="field-{{field.name}}">
+                        {{render_form(field)}}
+                    </div>
             {% endif %}
 
             <div class="form-group" id="field-{{field.name}}">
 
+                {% if field.type == 'BooleanField' %}
+                <label for="{{field.name}}" id="label-{{field.name}}" class="control-label col-lg-4 col-lg-offset-2">
+                    {{field.label.text}}
+                    <input type="checkbox" name="{{ field.name }}"/>
+                </label>
+                {% else %}
                 <label for="{{field.name}}" id="label-{{field.name}}" class="control-label col-lg-4">
                     {{field.label.text}}
                         {% if field.flags.required and field.label.text %}
                             <span class="required">*</span>
                         {% endif %}
                 </label>
-                <div class="controls col-lg-6">
-                    {{render_field(form, field)}}
-                </div>
+                    <div class="controls col-lg-6">
+                        {{render_field(form, field)}}
+                    </div>
+                {% endif %}
                 {% if field.description %}
                 <p class="description">{{field.description|safe}}</p>
                 {% endif %}

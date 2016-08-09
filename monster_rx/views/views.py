@@ -46,7 +46,8 @@ def login(request):
     if request.method == "POST" and login_form.validate():
 
         authc_token = UsernamePasswordToken(username=login_form.username.data,
-                                            password=login_form.password.data)
+                                            password=login_form.password.data,
+                                            remember_me=login_form.remember_me.data)
 
         try:
             subject = WebYosai.get_current_subject()
